@@ -1,0 +1,29 @@
+/* src/assets/global.css */
+
+/* 全局基础 */
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    background-color: #f9f9f9;
+    color: #333;
+    margin: 0;
+}
+
+/* Element Plus 组件默认圆角优化 */
+.el-card, .el-input, .el-button, .el-form-item {
+    border-radius: 8px !important;
+}
+
+/* 页面卡片通用样式 */
+.page-card {
+    background-color: #fff;
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.05);
+}
+
+/* 页面主区域容器 */
+.page-container {
+    max-width: 1080px;
+    margin: 40px auto;
+    padding: 0 16px;
+}
