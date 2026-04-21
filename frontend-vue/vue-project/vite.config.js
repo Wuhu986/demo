@@ -3,12 +3,15 @@ import vue from '@vitejs/plugin-vue'
 import path from 'path'
 
 export default defineConfig({
-  // base: '/vue/',
   plugins: [vue()],
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
     },
+  },
+  build: {
+    outDir: '../../src/main/resources/static',
+    emptyOutDir: true,
   },
   server: {
     port: 5173,

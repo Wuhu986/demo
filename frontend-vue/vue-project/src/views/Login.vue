@@ -25,7 +25,7 @@
 import { ref } from 'vue'
 import { ElMessage } from 'element-plus'
 import { useRouter } from 'vue-router'
-import { login } from '@/api/user'
+import { login, getUserById } from '@/api/user'
 import LanguageSwitcher from '@/components/LanguageSwitcher.vue'
 
 const router = useRouter()
@@ -51,13 +51,23 @@ const submitLogin = () => {
     if (valid) {
       try {
         const res = await login(form.value)
-        localStorage.setItem('token', res.data)
-        if (res.data.code === 200){
+        if (res.data.code === 200) {
+          const token = res.data.data
+          localStorage.setItem('token', token)
+          try {
+            const payload = JSON.parse(atob(token.split('.')[1]))
+            const userId = payload.sub
+            localStorage.setItem('userId', userId)
+            const userRes = await getUserById(userId)
+            const nickname = userRes.data?.data?.nickname || ''
+            localStorage.setItem('nickname', nickname)
+          } catch (e) {
+            // JWT decode failed, not critical
+          }
           ElMessage.success('登录成功')
           router.push('/products')
-        } else if(res.data.code === 401){
-          ElMessage.error('用户不存在，请注册')
-          router.push('/register')
+        } else if (res.data.code === 401) {
+          ElMessage.error('手机号或密码错误')
         }
       } catch (err) {
         ElMessage.error('登录失败')

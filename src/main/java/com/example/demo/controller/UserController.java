@@ -3,9 +3,12 @@ import com.example.demo.common.Result;
 import com.example.demo.model.User;
 import com.example.demo.model.UserRequest;
 import com.example.demo.service.UserService;
+import com.example.demo.utils.JwtUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 
 @RestController
@@ -42,13 +45,24 @@ public class UserController {
         return Result.success(user);
     }
 
-    @GetMapping("/checkLogin")
-    public Result<User> checkLogin(HttpServletRequest request) {
-        String token = request.getHeader("Authorization");
+    @GetMapping("/balance")
+    public Result<?> getBalance(HttpServletRequest request) {
+        Long userId = parseUserId(request);
+        if (userId == null) return Result.unauthorized("请先登录");
+        return userService.getBalance(userId);
+    }
 
-        if (token == null || !token.startsWith("Bearer ")) {
-            return Result.unauthorized("未登录");
-        }
-        return Result.success(null);
+    @PostMapping("/recharge")
+    public Result<?> recharge(@RequestBody Map<String, Double> body, HttpServletRequest request) {
+        Long userId = parseUserId(request);
+        if (userId == null) return Result.unauthorized("请先登录");
+        Double amount = body.get("amount");
+        return userService.recharge(userId, amount);
+    }
+
+    private Long parseUserId(HttpServletRequest request) {
+        String auth = request.getHeader("Authorization");
+        if (auth == null || !auth.startsWith("Bearer ")) return null;
+        return JwtUtil.getUserId(auth.substring(7));
     }
 }

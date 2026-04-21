@@ -22,6 +22,8 @@ public class User {
     private String birth;
     @TableField("email")
     private String email;
+    @TableField("balance")
+    private Double balance;
     private String createTime;
     private String updateTime;
 

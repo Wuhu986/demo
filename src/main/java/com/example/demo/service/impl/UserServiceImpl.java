@@ -1,6 +1,7 @@
 package com.example.demo.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.demo.common.Result;
 import com.example.demo.mappers.UserMapper;
@@ -52,7 +53,24 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         if (user == null) {
             return Result.error("用户不存在");
         }
-        user.setPassword(null); // 避免返回密码字段
+        user.setPassword(null);
         return Result.success(user);
+    }
+
+    @Override
+    public Result<?> recharge(Long userId, Double amount) {
+        if (amount == null || amount <= 0) return Result.error("充值金额必须大于0");
+        this.update(new UpdateWrapper<User>()
+                .setSql("balance = balance + " + amount)
+                .eq("id", userId));
+        User user = this.getById(userId);
+        return Result.success("充值成功", user.getBalance());
+    }
+
+    @Override
+    public Result<?> getBalance(Long userId) {
+        User user = this.getById(userId);
+        if (user == null) return Result.error("用户不存在");
+        return Result.success(user.getBalance() != null ? user.getBalance() : 0.0);
     }
 }
